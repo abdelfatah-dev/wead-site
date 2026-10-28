@@ -1,0 +1,28 @@
+:root {
+  /* الألوان الأساسية (من الهوية) */
+  --color-yellow: #f5b820;
+  --color-teal: #0c4d61;
+  --color-teal-light: #0f7986;
+  --color-ink: #17323a;
+  --color-bg: #f8fafa;
+
+  /* ألوان مشتقة */
+  --color-teal-deep: color-mix(in srgb, var(--color-teal) 70%, var(--color-ink));
+  --color-text-muted: #6b8187;
+  --color-text-faint: #93a4a9;
+  --color-border: #dce6e8;
+  --color-field-bg: #f5f9f9;
+  --color-surface: #ffffff;
+  --color-error: #c2410c;
+
+  /* الخط */
+  --font-sans: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+
+  /* الأنصاف والظلال */
+  --radius-card: 24px;
+  --radius-field: 18px;
+  --radius-button: 18px;
+  --shadow-card: 0 20px 50px -20px rgba(23, 50, 58, 0.18),
+    0 2px 8px rgba(23, 50, 58, 0.04);
+  --shadow-button: 0 10px 20px -8px rgba(12, 77, 97, 0.55);
+}
