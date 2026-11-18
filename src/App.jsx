@@ -5,14 +5,10 @@ import DashboardHome from './pages/dashboard/DashboardHome.jsx';
 import PlaceholderPage from './pages/dashboard/PlaceholderPage.jsx';
 import ChangePasswordPage from './pages/ChangePasswordPage.jsx';
 import { NAV_ITEMS } from './config/navigation.js';
-import { getStoredUser, hasSession } from './services/api.js';
+import { hasSession } from './services/api.js';
 
-function ProtectedRoute({ children, allowTemporaryPassword = false }) {
+function ProtectedRoute({ children }) {
   if (!hasSession()) return <Navigate to="/" replace />;
-  const user = getStoredUser();
-  if (!allowTemporaryPassword && user?.mustChangePassword) {
-    return <Navigate to="/change-password" replace />;
-  }
   return children;
 }
 
@@ -23,7 +19,7 @@ export default function App() {
         <Route path="/" element={<LoginPage />} />
         <Route
           path="/change-password"
-          element={<ProtectedRoute allowTemporaryPassword><ChangePasswordPage /></ProtectedRoute>}
+          element={<ProtectedRoute><ChangePasswordPage /></ProtectedRoute>}
         />
 
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

@@ -76,6 +76,27 @@
   border-radius: 12px;
 }
 
+.skipButton {
+  align-self: center;
+  padding: 4px 8px;
+  border: 0;
+  color: var(--color-teal);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.skipButton:hover {
+  text-decoration: underline;
+}
+
+.skipButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .noticeWrap {
   margin-top: auto;
   padding-top: 32px;

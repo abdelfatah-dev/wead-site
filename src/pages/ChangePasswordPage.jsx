@@ -54,10 +54,18 @@ export default function ChangePasswordPage() {
               <Button type="submit" icon={ArrowLeft} disabled={loading}>
                 {loading ? 'جاري الحفظ...' : 'حفظ كلمة المرور'}
               </Button>
+              <button
+                type="button"
+                className={styles.skipButton}
+                onClick={() => navigate('/dashboard', { replace: true })}
+                disabled={loading}
+              >
+                الدخول وتغييرها لاحقًا
+              </button>
               {notice && <p className={styles.status} role="alert">{notice}</p>}
             </form>
             <div className={styles.noticeWrap}>
-              <Notice title="مهم">لن تتمكن من فتح لوحة المتابعة قبل تغيير كلمة المرور المؤقتة.</Notice>
+              <Notice title="تنبيه">يمكنك تغيير كلمة المرور الآن أو تأجيلها. سنذكّرك بها عند تسجيل الدخول القادم.</Notice>
             </div>
           </section>
           <BrandPanel />
