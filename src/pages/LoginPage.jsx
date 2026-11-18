@@ -8,10 +8,11 @@ import TopBar from '../components/layout/TopBar.jsx';
 import Footer from '../components/layout/Footer.jsx';
 import BrandPanel from '../components/layout/BrandPanel.jsx';
 import styles from './LoginPage.module.css';
+import { login } from '../services/api.js';
 
 function validate({ username, password }) {
   const errors = {};
-  if (!username.trim()) errors.username = 'من فضلك أدخل اسم المستخدم أو رقم الهاتف.';
+  if (!username.trim()) errors.username = 'من فضلك أدخل رقم الهاتف.';
   if (!password) errors.password = 'من فضلك أدخل كلمة المرور.';
   return errors;
 }
@@ -20,6 +21,7 @@ export default function LoginPage() {
   const [values, setValues] = useState({ username: '', password: '' });
   const [errors, setErrors] = useState({});
   const [notice, setNotice] = useState('');
+  const [loading, setLoading] = useState(false);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
 
@@ -30,15 +32,25 @@ export default function LoginPage() {
     setNotice('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const found = validate(values);
     setErrors(found);
     if (found.username) return usernameRef.current?.focus();
     if (found.password) return passwordRef.current?.focus();
 
-    // TODO: ربط المصادقة الفعلية لاحقًا. لا نُظهر نجاح الدخول قبل ذلك.
-    setNotice('خدمة تسجيل الدخول غير مفعّلة بعد.');
+    try {
+      setLoading(true);
+      const data = await login(values.username.trim(), values.password);
+      localStorage.setItem('waed_token', data.token);
+      localStorage.setItem('waed_refresh_token', data.refreshToken);
+      localStorage.setItem('waed_user', JSON.stringify(data.user));
+      setNotice(`تم تسجيل الدخول بنجاح، أهلاً ${data.user.name}.`);
+    } catch (error) {
+      setNotice(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,14 +68,14 @@ export default function LoginPage() {
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
               <TextField
                 ref={usernameRef}
-                label="اسم المستخدم"
+                label="رقم الهاتف"
                 icon={User}
                 name="username"
                 value={values.username}
                 onChange={handleChange}
                 error={errors.username}
-                placeholder="أدخل اسم المستخدم أو رقم الهاتف"
-                autoComplete="username"
+                placeholder="أدخل رقم الهاتف"
+                autoComplete="tel"
               />
 
               <PasswordField
@@ -82,8 +94,8 @@ export default function LoginPage() {
                 }
               />
 
-              <Button type="submit" icon={ArrowLeft}>
-                تسجيل الدخول
+              <Button type="submit" icon={ArrowLeft} disabled={loading}>
+                {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
               </Button>
 
               {notice && (
