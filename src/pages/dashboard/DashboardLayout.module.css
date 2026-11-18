@@ -1,0 +1,24 @@
+.shell { display: flex; min-height: 100vh; }
+.body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding: 24px 28px 44px;
+}
+.overlay { display: none; }
+
+@media (max-width: 900px) {
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: rgba(23, 50, 58, 0.45);
+  }
+  .content { padding: 18px 16px 32px; }
+}
