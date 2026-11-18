@@ -1,46 +1,55 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { getChildren, getChildOverview } from '../services/portalService.js';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { getParentDashboard } from '../services/portalService.js';
 
 const ChildContext = createContext(null);
 const STORAGE_KEY = 'waed:selectedChild';
+const EMPTY_LIST = [];
 
 export function ChildProvider({ children }) {
-  const kids = useMemo(() => getChildren(), []);
+  const [dashboard, setDashboard] = useState(null);
+  const [selectedId, setSelectedId] = useState(() => localStorage.getItem(STORAGE_KEY));
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const [selectedId, setSelectedId] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved && kids.some((k) => k.id === saved)) return saved;
-    } catch {
-      /* التخزين غير متاح: نكمل بدونه */
-    }
-    return kids[0]?.id ?? null;
-  });
+  useEffect(() => {
+    getParentDashboard()
+      .then(setDashboard)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const kids = useMemo(() => dashboard?.children ?? EMPTY_LIST, [dashboard]);
+  const effectiveSelectedId = kids.some((kid) => kid.id === selectedId)
+    ? selectedId
+    : kids[0]?.id ?? null;
 
   const selectChild = useCallback((id) => {
     setSelectedId(id);
-    try {
-      localStorage.setItem(STORAGE_KEY, id);
-    } catch {
-      /* تجاهل */
-    }
+    localStorage.setItem(STORAGE_KEY, id);
   }, []);
 
-  const overview = useMemo(
-    () => (selectedId ? getChildOverview(selectedId) : null),
-    [selectedId]
+  const child = useMemo(
+    () => kids.find((kid) => kid.id === effectiveSelectedId) ?? null,
+    [kids, effectiveSelectedId]
   );
-
-  const value = useMemo(
-    () => ({ kids, child: overview?.child ?? null, overview, selectChild }),
-    [kids, overview, selectChild]
-  );
+  const overview = useMemo(() => (child ? { child, ...child.overview } : null), [child]);
+  const value = useMemo(() => ({
+    kids,
+    child,
+    overview,
+    parent: dashboard?.parent ?? null,
+    notifications: dashboard?.notifications ?? EMPTY_LIST,
+    loading,
+    error,
+    selectChild,
+  }), [kids, child, overview, dashboard, loading, error, selectChild]);
 
   return <ChildContext.Provider value={value}>{children}</ChildContext.Provider>;
 }
+
 // eslint-disable-next-line react-refresh/only-export-components
 export function useSelectedChild() {
-  const ctx = useContext(ChildContext);
-  if (!ctx) throw new Error('useSelectedChild must be used inside ChildProvider');
-  return ctx;
+  const context = useContext(ChildContext);
+  if (!context) throw new Error('useSelectedChild must be used inside ChildProvider');
+  return context;
 }

@@ -1,14 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { NAV_ITEMS } from '../../config/navigation.js';
-import { getParent } from '../../services/portalService.js';
+import { useSelectedChild } from '../../context/ChildContext.jsx';
 import Avatar from './Avatar.jsx';
 import NotificationsMenu from './NotificationsMenu.jsx';
 import styles from './Header.module.css';
 
 export default function Header({ onOpenMenu }) {
   const { pathname } = useLocation();
-  const parent = getParent();
+  const { parent } = useSelectedChild();
   const current = NAV_ITEMS.find(
     (i) => pathname === i.to || (!i.end && pathname.startsWith(`${i.to}/`))
   );
@@ -24,9 +24,9 @@ export default function Header({ onOpenMenu }) {
       <div className={styles.actions}>
         <NotificationsMenu />
         <Link to="/dashboard/settings" className={styles.account} aria-label="إعدادات الحساب">
-          <Avatar name={parent.name} size={38} />
+          <Avatar name={parent?.name || 'ولي الأمر'} size={38} />
           <span className={styles.accountText}>
-            <strong>{parent.name}</strong>
+            <strong>{parent?.name || 'ولي الأمر'}</strong>
             <small>ولي أمر</small>
           </span>
         </Link>

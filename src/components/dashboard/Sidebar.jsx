@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { ChevronsLeft, ChevronsRight, LogOut, X } from 'lucide-react';
 import { NAV_ITEMS } from '../../config/navigation.js';
 import styles from './Sidebar.module.css';
+import { logout } from '../../services/api.js';
 
 export default function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile }) {
   const navigate = useNavigate();
@@ -59,13 +60,15 @@ export default function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onClo
       </nav>
 
       <div className={styles.footer}>
-        {/* لا توجد مصادقة فعلية بعد: الخروج يرجّع لصفحة الدخول فقط */}
         <button
           type="button"
           className={styles.link}
           data-tooltip="تسجيل الخروج"
           aria-label={collapsed ? 'تسجيل الخروج' : undefined}
-          onClick={() => navigate('/')}
+          onClick={async () => {
+            await logout();
+            navigate('/', { replace: true });
+          }}
         >
           <LogOut size={20} className={styles.icon} aria-hidden="true" />
           <span className={styles.label}>تسجيل الخروج</span>

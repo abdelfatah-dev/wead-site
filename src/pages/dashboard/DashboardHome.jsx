@@ -14,7 +14,15 @@ import PaymentCard from '../../components/dashboard/home/PaymentCard.jsx';
 import s from '../../components/dashboard/home/home.module.css';
 
 export default function DashboardHome() {
-  const { overview } = useSelectedChild();
+  const { overview, loading, error } = useSelectedChild();
+
+  if (loading) {
+    return <Card title="الرئيسية"><EmptyState>جاري تحميل بيانات الأبناء...</EmptyState></Card>;
+  }
+
+  if (error) {
+    return <Card title="الرئيسية"><EmptyState>{error}</EmptyState></Card>;
+  }
 
   if (!overview) {
     return (

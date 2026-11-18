@@ -5,9 +5,11 @@ import styles from './ReportDetails.module.css';
 const List = ({ title, items }) => (
   <section>
     <h3 className={styles.sub}>{title}</h3>
-    <ul className={styles.list}>
-      {items.map((t) => <li key={t}>{t}</li>)}
-    </ul>
+    {items.length ? (
+      <ul className={styles.list}>
+        {items.map((t) => <li key={t}>{t}</li>)}
+      </ul>
+    ) : <p>لا توجد بيانات.</p>}
   </section>
 );
 

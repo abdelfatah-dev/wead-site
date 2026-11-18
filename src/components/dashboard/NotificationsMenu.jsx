@@ -1,22 +1,24 @@
 import { useCallback, useRef, useState } from 'react';
 import { Bell, BellOff } from 'lucide-react';
-import { getNotifications } from '../../services/portalService.js';
+import { useSelectedChild } from '../../context/ChildContext.jsx';
 import { formatDate } from '../../utils/format.js';
 import useDismiss from '../../hooks/useDismiss.js';
 import EmptyState from './EmptyState.jsx';
 import styles from './NotificationsMenu.module.css';
 
 export default function NotificationsMenu() {
-  const [items, setItems] = useState(() => getNotifications());
+  const { notifications } = useSelectedChild();
+  const [readIds, setReadIds] = useState([]);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const close = useCallback(() => setOpen(false), []);
   useDismiss(ref, open, close);
 
+  const items = notifications.map((item) => ({ ...item, read: item.read || readIds.includes(item.id) }));
   const unread = items.filter((n) => !n.read).length;
   const markRead = (id) =>
-    setItems((list) => list.map((n) => (n.id === id ? { ...n, read: true } : n)));
-  const markAll = () => setItems((list) => list.map((n) => ({ ...n, read: true })));
+    setReadIds((list) => (list.includes(id) ? list : [...list, id]));
+  const markAll = () => setReadIds(notifications.map((item) => item.id));
 
   return (
     <div className={styles.wrap} ref={ref}>

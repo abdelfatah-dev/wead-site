@@ -1,5 +1,4 @@
 import { BookOpen, CalendarCheck, Mic, Star } from 'lucide-react';
-import { formatJuz } from '../../../utils/format.js';
 import s from './home.module.css';
 
 function Stat({ icon: Icon, tone, label, value, hint }) {
@@ -20,7 +19,12 @@ function Stat({ icon: Icon, tone, label, value, hint }) {
 export default function StatCards({ progress, attendance }) {
   return (
     <div className={s.stats}>
-      <Stat icon={BookOpen} label="إجمالي المحفوظ" value={formatJuz(progress?.memorizedJuz)} hint={progress?.currentSurah ?? 'لا توجد بيانات'} />
+      <Stat
+        icon={BookOpen}
+        label="الحفظ الحالي"
+        value={progress?.currentMemorization ?? '—'}
+        hint={progress?.revision ? `المراجعة: ${progress.revision}` : 'لا توجد بيانات'}
+      />
       <Stat
         icon={CalendarCheck} tone="yellow" label="نسبة الحضور"
         value={attendance.percent !== null ? `${attendance.percent}%` : '—'}

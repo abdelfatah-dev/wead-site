@@ -1,6 +1,9 @@
 // أرقام لاتينية (2026) زي صفحة الـ Login
 const LOCALE = 'ar-EG-u-nu-latn';
-const toDate = (iso) => new Date(`${iso}T12:00:00`);
+const toDate = (value) => {
+  if (!value) return null;
+  return new Date(String(value).includes('T') ? value : `${value}T12:00:00`);
+};
 
 export function formatDate(iso, options = { day: 'numeric', month: 'long', year: 'numeric' }) {
   if (!iso) return '—';

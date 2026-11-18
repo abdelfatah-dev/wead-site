@@ -3,15 +3,30 @@ import LoginPage from './pages/LoginPage.jsx';
 import DashboardLayout from './pages/dashboard/DashboardLayout.jsx';
 import DashboardHome from './pages/dashboard/DashboardHome.jsx';
 import PlaceholderPage from './pages/dashboard/PlaceholderPage.jsx';
+import ChangePasswordPage from './pages/ChangePasswordPage.jsx';
 import { NAV_ITEMS } from './config/navigation.js';
+import { getStoredUser, hasSession } from './services/api.js';
+
+function ProtectedRoute({ children, allowTemporaryPassword = false }) {
+  if (!hasSession()) return <Navigate to="/" replace />;
+  const user = getStoredUser();
+  if (!allowTemporaryPassword && user?.mustChangePassword) {
+    return <Navigate to="/change-password" replace />;
+  }
+  return children;
+}
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route
+          path="/change-password"
+          element={<ProtectedRoute allowTemporaryPassword><ChangePasswordPage /></ProtectedRoute>}
+        />
 
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<DashboardHome />} />
           {/* باقي الصفحات: واجهة مؤقتة صريحة لحد ما نبنيها في مراحلها */}
           {NAV_ITEMS.filter((i) => !i.end).map((item) => (

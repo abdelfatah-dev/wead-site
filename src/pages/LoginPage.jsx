@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, ArrowLeft } from 'lucide-react';
 import TextField from '../components/ui/TextField.jsx';
 import PasswordField from '../components/ui/PasswordField.jsx';
@@ -8,7 +9,7 @@ import TopBar from '../components/layout/TopBar.jsx';
 import Footer from '../components/layout/Footer.jsx';
 import BrandPanel from '../components/layout/BrandPanel.jsx';
 import styles from './LoginPage.module.css';
-import { login } from '../services/api.js';
+import { login, saveSession } from '../services/api.js';
 
 function validate({ username, password }) {
   const errors = {};
@@ -18,6 +19,7 @@ function validate({ username, password }) {
 }
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [values, setValues] = useState({ username: '', password: '' });
   const [errors, setErrors] = useState({});
   const [notice, setNotice] = useState('');
@@ -42,10 +44,12 @@ export default function LoginPage() {
     try {
       setLoading(true);
       const data = await login(values.username.trim(), values.password);
-      localStorage.setItem('waed_token', data.token);
-      localStorage.setItem('waed_refresh_token', data.refreshToken);
-      localStorage.setItem('waed_user', JSON.stringify(data.user));
-      setNotice(`تم تسجيل الدخول بنجاح، أهلاً ${data.user.name}.`);
+      saveSession(data);
+      if (data.user.role !== 'parent') {
+        setNotice('لوحة ولي الأمر فقط هي المتاحة حاليًا.');
+        return;
+      }
+      navigate(data.user.mustChangePassword ? '/change-password' : '/dashboard', { replace: true });
     } catch (error) {
       setNotice(error.message);
     } finally {

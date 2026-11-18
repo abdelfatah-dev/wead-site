@@ -31,7 +31,7 @@ export default function ReportCard({ report, childName, className }) {
 
           <p className={s.note}>{report.teacherNote}</p>
 
-          <div className={s.twoCols}>
+          {(report.strengths.length > 0 || report.improvements.length > 0) && <div className={s.twoCols}>
             <div>
               <h3 className={s.subTitle}>نقاط القوة</h3>
               <Chips items={report.strengths} tone="good" />
@@ -40,7 +40,7 @@ export default function ReportCard({ report, childName, className }) {
               <h3 className={s.subTitle}>نقاط تحتاج إلى تحسين</h3>
               <Chips items={report.improvements} tone="improve" />
             </div>
-          </div>
+          </div>}
 
           <button type="button" className={s.btn} onClick={() => setOpen(true)}>
             عرض التقرير كاملًا
